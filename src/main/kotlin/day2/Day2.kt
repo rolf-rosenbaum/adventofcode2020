@@ -38,6 +38,7 @@ fun List<List<String>>.toPwdList() =
     }
 
 data class Rule(val char: Char, val min: Int, val max: Int) {
+
     fun matches(testString: String): Boolean =
         testString.count { it == char } in min..max
 
