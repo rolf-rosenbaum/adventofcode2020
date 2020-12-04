@@ -11,7 +11,46 @@ fun main() {
     println("Result2: $result2")
 }
 
-val requiredFields = listOf("byr:", "iyr", "eyr:", "hgt:", "hcl:", "ecl:", "pid:")
+private fun readInputData() =
+    {}.javaClass.classLoader.getResourceAsStream("day4.txt")
+        .reader()
+        .readText().split("\n\n")
+
+fun partOne(passportString: List<String>): Int {
+    return passportString.count {
+        it.containsAll(requiredFields)
+    }
+}
+
+fun partTwo(strings: List<String>): Int {
+
+    return strings
+        .filter {
+            it.containsAll(requiredFields)
+        }.map {
+            Passport.create(
+                it.split(" ", "\n")
+                    .associateBy { s -> s.split(":").first() }
+            )
+        }.count { it.isValid() }
+}
+
+private fun String.isAllDigits(): Boolean {
+    this.forEach {
+        if (!it.isDigit())
+            return false
+    }
+    return true
+}
+
+private fun String.containsAll(strings: List<String>): Boolean {
+    strings.forEach {
+        if (it !in this) return false
+    }
+    return true
+}
+
+private val requiredFields = listOf("byr:", "iyr", "eyr:", "hgt:", "hcl:", "ecl:", "pid:")
 
 data class Passport(
     val byr: Int,
@@ -37,7 +76,7 @@ data class Passport(
             iyr = input["iyr"]?.replace("iyr:", "")?.toInt() ?: 0,
             eyr = input["eyr"]?.replace("eyr:", "")?.toInt() ?: 0,
             hcl = input["hcl"]?.replace("hcl:", "") ?: "",
-            hgt = Height.create(input["hgt"]?.replace("hgt:", "")!!),
+            hgt = Height.create(input["hgt"]!!.replace("hgt:", "")),
             ecl = input["ecl"]?.replace("ecl:", "") ?: "",
             pid = input["pid"]?.replace("pid:", "") ?: ""
         )
@@ -50,50 +89,10 @@ data class Height(
 ) {
     companion object {
         fun create(input: String): Height =
-            Height(input!!.substring(0, input.length - 2).toInt(), input.substring(input.length - 2))
+            Height(input.substring(0, input.length - 2).toInt(), input.substring(input.length - 2))
     }
 
     fun isValid(): Boolean {
         return if (measure == "in") height in 59..76 else if (measure == "cm") height in 150..193 else false
     }
 }
-
-private fun String.isAllDigits(): Boolean {
-    this.forEach {
-        if (!it.isDigit())
-            return false
-    }
-    return true
-}
-
-private fun readInputData() =
-    {}.javaClass.classLoader.getResourceAsStream("day4.txt")
-        .reader()
-        .readText().split("\n\n")
-
-
-fun partOne(passportString: List<String>): Int {
-    return passportString.count {
-        it.containsAll(requiredFields)
-    }
-}
-
-private fun String.containsAll(strings: List<String>): Boolean {
-    strings.forEach {
-        if (!this.contains(it)) return false
-    }
-    return true
-}
-
-fun partTwo(strings: List<String>): Int {
-
-    return strings.filter { it.containsAll(requiredFields) }
-        .map {
-            Passport.create(
-                it.split(" ", "\n")
-                    .associateBy { s ->  s.split(":").first() }
-            )
-        }
-        .count { it.isValid() }
-}
-
