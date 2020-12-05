@@ -16,24 +16,17 @@ private fun readInputData() =
         .reader()
         .readLines()
 
-
 fun partOne(passes: List<String>) =
     passes.maxByOrNull { s ->
         s.toSeatId()
     }?.toSeatId() ?: 0
 
-fun partTwo(passes: List<String>): Int {
-
-    val sortedSeats = passes.map {
-        it.toSeatId()
-    }.sorted()
-
-    (0..sortedSeats.size).forEachIndexed { index, i ->
-        if (index !in sortedSeats && index + 1 in sortedSeats && index - 1 in sortedSeats)
-            return index
-    }
-    return 0
-}
+fun partTwo(passes: List<String>): Int = passes.asSequence().map {
+    it.toSeatId()
+}.sorted()
+    .windowed(2).first {
+        it[1] - it[0] != 1
+    }.first() + 1
 
 private fun String.toSeatId(): Int = substring(0, 7)
     .replace("F", "0")
