@@ -16,19 +16,18 @@ private fun readInputData() =
         .reader()
         .readLines()
 
-fun partOne(slope: List<String>): Long = traverse(slope, 3)
+fun partOne(forrest: List<String>): Long = traverse(forrest, 3)
 
-fun partTwo(slope: List<String>): Long = listOf(1, 3, 5, 7)
+fun partTwo(forrest: List<String>): Long = listOf(1, 3, 5, 7)
     .map {
-        traverse(slope, it)
-    }
-    .reduce { acc, i -> acc * i } * traverse(slope, 1, 2)
+        traverse(forrest, it)
+    }.reduce { acc, i -> acc * i } * traverse(forrest, 1, 2)
 
 
-private fun traverse(slope: List<String>, horizontalStep: Int, verticalStep: Int = 1): Long {
+private fun traverse(forrest: List<String>, horizontalStep: Int, verticalStep: Int = 1): Long {
     var treeCount = 0
     var pos = 0
-    slope.forEachIndexed { index, row ->
+    forrest.forEachIndexed { index, row ->
         if (index % verticalStep == 0) {
             if (row[pos % row.length] == '#') {
                 treeCount++
