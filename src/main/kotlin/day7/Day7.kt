@@ -7,7 +7,7 @@ fun main() {
     val result1 = partOne(input)
     println("Result1: $result1")
 
-    val result2 = partTwo()
+    val result2 = partTwo(input)
     println("Result2: $result2")
 }
 
@@ -16,67 +16,56 @@ private fun readInputData() =
         .reader()
         .readLines()
 
-fun partOne(input: List<String>): Int {
-    val bags = input.map {
-        it.toBag()
-    }
+fun partOne(input: List<String>): Int = bagsWithGold(readBags(input).first, "shiny gold", mutableSetOf())
 
-    bags.groupBy {
-        it.color
-    }.map { entry ->
-        entry.value.forEach { bag ->
-            bag.bagsContained.forEach { (innerBag, count) ->
-//                innerBag.bagsContained.
-            }
+
+fun partTwo(input: List<String>) = nestedBags(readBags(input).second)
+
+private fun bagsWithGold(bagsIn: Bags, colour: Colour, containingColours: Colours): Int {
+
+    bagsIn[colour]?.forEach { bagsWithGold(bagsIn, it, containingColours + it) }
+
+    return containingColours.size
+}
+
+
+private fun nestedBags(bags: BagsCount, colour: String = "shiny gold"): Int =
+    bags.getValue(colour).scan(0) { acc, it ->
+        (acc + it.first) + it.first * nestedBags(bags, it.second)
+    }.last()
+
+private fun readBags(inputList: List<String>): Pair<Bags, BagsCount> {
+
+    val bagsIn = mutableMapOf<Colour, Colours>().withDefault { mutableSetOf() }
+    val bags = mutableMapOf<Colour, ColourCounts>().withDefault { mutableListOf() }
+
+    inputList.forEach { line ->
+        val colour = line.split(" bags").first()
+        "(\\d+) (.+?) bags?[,.]".toRegex().findAll(line.split("contain ")[1]).forEach { b ->
+            val count = b.destructured.component1()
+            val colourInside = b.destructured.component2()
+            bagsIn[colourInside] = bagsIn.getValue(colourInside) + colour
+            bags[colour] = bags.getValue(colour) + Pair(count.toInt(), colourInside)
         }
     }
 
-    return bags.count {
-        it.containsBagOfColor("shiny gold")
-    }
+    return bagsIn to bags
 }
 
-fun partTwo() = 0
-
-private fun String.toBag(): Bag {
-    val words = split(" ")
-    return Bag(
-        color = words[0] + " " + words[1],
-        bagsContained = containedBags(words.subList(4, words.size))
-    )
+operator fun <T> MutableSet<T>.plus(e: T): MutableSet<T> {
+    this.add(e)
+    return this
 }
 
-private fun containedBags(restWords: List<String>): MutableList<Pair<Bag, Int>> {
-
-    if (restWords[0] == "no") return mutableListOf()
-
-    var i = 0
-    var resultList = mutableListOf<Pair<Bag, Int>>()
-    do {
-        resultList.add(Bag(restWords[i + 1] + " " + restWords[i + 2]) to restWords[i].toInt())
-        i += 4
-    } while (!restWords[i - 1].endsWith("."))
-
-    return resultList
+operator fun <T> MutableList<T>.plus(e: T): MutableList<T> {
+    this.add(e)
+    return this
 }
 
-data class Bag(
-    val color: String,
-    val bagsContained: MutableList<Pair<Bag, Int>> = mutableListOf()
-) {
-    fun containsBagOfColor(color: String): Boolean {
-        return bagsContained.any { it.first.color == color }
-    }
-}
+typealias Colour = String
+typealias ColourCount = Pair<Int, Colour>
+typealias ColourCounts = MutableList<ColourCount>
+typealias Colours = MutableSet<Colour>
+typealias Bags = Map<Colour, Colours>
+typealias BagsCount = Map<Colour, ColourCounts>
 
-fun List<Bag>.containsBagOfColor(color: String): Boolean {
-    this.forEach { bag ->
-        return if (bag.containsBagOfColor(color)) {
-            true
-        } else {
-            bag.bagsContained
-                .map { it.first }.containsBagOfColor(color)
-        }
-    }
-    return false
-}

@@ -17,10 +17,8 @@ private fun readInputData() =
         .reader()
         .readLines()
 
-
 fun partOne(input: List<String>): Int {
     return runOperations(input).first
-
 }
 
 fun partTwo(input: List<String>): Int {
@@ -77,9 +75,6 @@ private fun runOperations(input: List<String>): Pair<Int, Int> {
                 index += operation[1].toInt()
             }
         }
-
     }
     return result to index
 }
-
-
