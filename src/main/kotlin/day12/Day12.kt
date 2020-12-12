@@ -58,6 +58,15 @@ fun partTwo(commands: List<Command>): Int {
     }
     return abs(ship.position.x) + abs(ship.position.y)
 }
+sealed class Command(val direction: Direction, open val steps: Int) {
+    class North(steps: Int) : Command(Direction.NORTH, steps)
+    class South(steps: Int) : Command(Direction.SOUTH, steps)
+    class East(steps: Int) : Command(EAST, steps)
+    class West(steps: Int) : Command(Direction.WEST, steps)
+    class Forward(steps: Int) : Command(Direction.FORWARD, steps)
+    class Left(steps: Int) : Command(Direction.LEFT, steps)
+    class Right(steps: Int) : Command(Direction.RIGHT, steps)
+}
 
 enum class Direction(val x: Int, val y: Int) {
     EAST(1, 0),
@@ -107,12 +116,3 @@ data class Ship(var position: Vector, var direction: Direction) {
     }
 }
 
-sealed class Command(val direction: Direction, open val steps: Int) {
-    class North(steps: Int) : Command(Direction.NORTH, steps)
-    class South(steps: Int) : Command(Direction.SOUTH, steps)
-    class East(steps: Int) : Command(EAST, steps)
-    class West(steps: Int) : Command(Direction.WEST, steps)
-    class Forward(steps: Int) : Command(Direction.FORWARD, steps)
-    class Left(steps: Int) : Command(Direction.LEFT, steps)
-    class Right(steps: Int) : Command(Direction.RIGHT, steps)
-}
