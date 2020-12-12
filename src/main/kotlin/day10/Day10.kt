@@ -16,52 +16,49 @@ private fun readInputData() =
         .reader()
         .readLines().map(String::toInt)
 
-
 fun partOne(input: MutableList<Int>): Int {
-    input.add(0, 0)
-    val (ones, threes) = input.sorted()
-        .zipWithNext { a, b ->
-            b - a
-        }.partition {
-            it == 1
-        }
+
+    val (ones, threes) = input
+        .apply { add(0, 0) }
+        .differenceList()
+        .partition { it == 1 }
     return ones.size * (threes.size + 1)
-
 }
-
 
 fun partTwo(input: MutableList<Int>): Long {
     input.add(0, 0)
 
-    val options = mutableListOf<Long>()
-    val differences = input.sorted()
-        .zipWithNext { a, b ->
-            b - a
-        }
+    val validLines = mutableListOf<Long>()
+    val differences = input.differenceList()
 
     var index = 0
     while (index < differences.size) {
-        var count = 0
+        var numberOfSizeOneSteps = 0
         while (index < differences.size && differences[index] == 1) {
-            count++
+            numberOfSizeOneSteps++
             index++
         }
-        if (count > 1) {
-            val element = 2.pow(count - 1) - 1
-            options.add((0..element).map {
-                it.toString(2).padStart(count - 1, '0')
-            }.filterNot {
-                it.contains("000")
-            }.count().toLong())
+        if (numberOfSizeOneSteps > 1) {
+            val element = 2.pow(numberOfSizeOneSteps - 1) - 1
+            validLines.add((0..element).map {
+                it.toString(2).padStart(numberOfSizeOneSteps - 1, '0')
+            }.count {
+                !it.contains("000")
+            }.toLong())
         }
-        count = 0
+        numberOfSizeOneSteps = 0
         index++
     }
-    return options.fold(1) { acc, i -> acc * i}
+    return validLines.reduce{ acc, i -> acc * i }
 }
 
-fun Int.pow(exp:Int): Long {
-    return if (exp<0) 0
-    else  (0 until exp).fold(1) { acc, i -> acc * 2}
+private fun MutableList<Int>.differenceList() = sorted()
+    .zipWithNext { a, b ->
+        b - a
+    }
+
+fun Int.pow(exp: Int): Long {
+    return if (exp < 0) 0
+    else (0 until exp).fold(1) { acc, _ -> acc * 2 }
 }
 
