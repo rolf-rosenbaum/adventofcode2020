@@ -1,8 +1,8 @@
 package day11
 
 fun main() {
-    val result1 = partOne()
-    println("Result1: $result1")
+//    val result1 = partOne()
+//    println("Result1: $result1")
 
     val result2 = partTwo()
     println("Result2: $result2")
@@ -46,9 +46,11 @@ fun partTwo(): Int {
     var gens = 1
     while (true) {
         println("Generation: $gens")
-        println("Count: ${now.count()}")
+        println("Count: ${now.size}")
         if (next == now) {
-            return now.filterIsInstance<Cell.Seat>().filter { it.occupied }.count()
+            return now.filterIsInstance<Cell.Seat>()
+                .filter { it.occupied }
+                .count()
         }
         gens++
         now = next
@@ -79,8 +81,9 @@ fun List<Cell>.nextGeneration(): List<Cell> {
     for (x in 0 until maxX) {
         for (y in 0..maxY) {
             if (isSeat(x, y)) {
-                if (countOccupiedNeighbors(Cell.Seat(x, y)) == 0)
+                if (countOccupiedNeighbors(Cell.Seat(x, y)) == 0) {
                     next.add(Cell.Seat(x, y, true))
+                }
             }
         }
     }
@@ -90,41 +93,48 @@ fun List<Cell>.nextGeneration(): List<Cell> {
 }
 
 fun List<Cell>.nextGeneration2(): List<Cell> {
-    val next = mutableListOf<Cell>()
+    val next = mutableSetOf<Cell>()
     next.addAll(this)
-    val maxX = 99
-    val maxY = 98
     for (x in 0 until maxX) {
         for (y in 0..maxY) {
             if (isSeat(x, y)) {
                 if (countVisibleOccupiedSeats(Cell.Seat(x, y)) == 0)
-                    next.add(Cell.Seat(x, y, true))
+                    next.remove(Cell.Seat(x, y))
+                next.add(Cell.Seat(x, y, true))
             }
         }
     }
-    return next.filter {
-        countVisibleOccupiedSeats(it) < 5
-    }
+    return next.filterIsInstance<Cell.Seat>()
+        .filter {
+            countVisibleOccupiedSeats(it) < 5
+        }
 }
 
-fun List<Cell>.isSeat(x: Int, y: Int): Boolean = seats.contains(Cell.Seat(x, y))
-
-fun List<Cell>.isVisible(cell1: Cell, cell2: Cell): Boolean {
-    return cell1.isInRightDirectionFrom(this, cell2)
-}
-
-private fun List<Cell>.findFirstSeats(cell: Cell): List<Cell.Seat> {
-    val seats = mutableListOf<Cell.Seat>()
-
-
-    return seats
-}
+fun isSeat(x: Int, y: Int): Boolean = seats.contains(Cell.Seat(x, y))
 
 private fun List<Cell>.countVisibleOccupiedSeats(cell: Cell): Int {
-    return this.filterIsInstance<Cell.Seat>()
-        .filter { isVisible(it, cell) }
-        .filter { it.occupied }
-        .count()
+    val directions = listOf(
+        Vector(0, -1),
+        Vector(1, -1),
+        Vector(1, 0),
+        Vector(1, 1),
+        Vector(0, 1),
+        Vector(-1, 1),
+        Vector(-1, 0),
+        Vector(-1, -1),
+    )
+    var visibleSeats = mutableListOf<Cell.Seat>()
+
+    directions.forEach { direction ->
+        val seat = this.filterIsInstance<Cell.Seat>()
+            .firstOrNull { c ->
+                c.isInDirectionFrom(cell, direction)
+            }
+        if (seat != null) {
+            visibleSeats.add(seat)
+        }
+    }
+    return visibleSeats.count { it.occupied }
 }
 
 private fun List<Cell>.countOccupiedNeighbors(cell: Cell): Int {
@@ -138,18 +148,30 @@ private fun Cell.isNeighbor(otherCell: Cell): Boolean {
     return this != otherCell && x - otherCell.x in -1..1 && y - otherCell.y in -1..1
 }
 
+data class Vector(val x: Int, val y: Int)
+
 sealed class Cell(open val x: Int, open val y: Int) {
     class Floor(x: Int, y: Int) : Cell(x, y)
     data class Seat(override val x: Int, override val y: Int, val occupied: Boolean = false) : Cell(x, y)
 
     operator fun minus(c: Cell): Cell = Cell.Seat(x - c.x, y - c.y)
 
+    fun isInDirectionFrom(other: Cell, direction: Vector): Boolean {
+        if (this == other) return false
 
-    fun isInRightDirectionFrom(cells: List<Cell>, other: Cell): Boolean =
-        (other - this).x == 0 ||
-                (other - this).y == 0 ||
-                (other - this).x == (other - this).y ||
-                (other - this).x == -1 * (other - this).y
+        val v = other - this
+        if (direction == Vector(0, -1)) return v.x == 0 && v.y < 0
+        if (direction == Vector(1, -1)) return v.x > 0 && v.y < 0 && v.x == -v.y
+        if (direction == Vector(1, 0)) return v.x > 0 && v.y == 0
+        if (direction == Vector(1, 1)) return v.x > 0 && v.y > 0 && v.x == v.y
+        if (direction == Vector(0, 1)) return v.x == 0 && v.y > 0
+        if (direction == Vector(-1, 1)) return v.x < 0 && v.y > 0 && v.x == -v.y
+        if (direction == Vector(-1, 0)) return v.x < 0 && v.y == 0
+        if (direction == Vector(-1, -1)) return v.x < 0 && v.y < 0 && v.x == v.y
+
+        return false
+    }
+
 
 }
 
