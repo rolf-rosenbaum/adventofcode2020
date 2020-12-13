@@ -12,7 +12,7 @@ fun main() {
 }
 
 private fun readInputData() =
-    {}.javaClass.classLoader.getResourceAsStream("day10.txt")
+    {}.javaClass.classLoader.getResourceAsStream("day17.txt")
         .reader()
         .readLines()
 
