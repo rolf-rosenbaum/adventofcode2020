@@ -23,7 +23,6 @@ fun partTwo(forrest: List<String>): Long = listOf(1, 3, 5, 7)
         traverse(forrest, it)
     }.reduce { acc, i -> acc * i } * traverse(forrest, 1, 2)
 
-
 private fun traverse(forrest: List<String>, horizontalStep: Int, verticalStep: Int = 1): Long {
     var treeCount = 0
     var pos = 0

@@ -30,7 +30,7 @@ private fun findStableMap(tolerance: Int, countFunction: (Seats, Seat) -> Int): 
         .zipWithNext()
         .first { it.first.contentDeepEquals(it.second) }
         .first
-        .occupied()
+        .countOccupied()
 
 private fun Seats.next(tolerance: Int, countFunction: (Seats, Seat) -> Int): Seats =
     this.mapIndexed { x, row ->
@@ -60,8 +60,8 @@ private fun findSeatOnVector(seats: Seats, seat: Seat, vector: Seat): Char? =
         .map { if (it in seats) seats[it.first][it.second] else null }
         .first { it == null || it != '.' }
 
-private fun Seats.occupied(): Int =
-    this.sumBy { it.count { row -> row == '#' } }
+private fun Seats.countOccupied(): Int =
+    this.sumBy { it.count { c -> c == '#' } }
 
 private operator fun Seats.contains(seat: Seat): Boolean =
     seat.first in this.indices && seat.second in this.first().indices
