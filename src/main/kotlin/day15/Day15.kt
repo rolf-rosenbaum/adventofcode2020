@@ -14,8 +14,23 @@ fun main() {
 private fun readInputData() =
     {}.javaClass.classLoader.getResourceAsStream("day15.txt")
         .reader()
-        .readLines()
+        .readText().split(",").map(String::toInt)
 
-fun partOne(input: List<String>): Int = 0
+fun partOne(input: List<Int>) =  game(input).drop(2019).first()
 
-fun partTwo(input: List<String>): Int = 0
+
+fun partTwo(input: List<Int>) = game(input).drop(29999999).first()
+
+fun game(input: List<Int>): Sequence<Int> = sequence {
+    yieldAll(input)
+
+    val mem = input.mapIndexed{index, number -> number to index}.toMap().toMutableMap()
+    var turns = input.size
+    var nextNumber = 0
+    while (true) {
+        yield(nextNumber)
+        val lastTime = mem[nextNumber] ?: turns
+        mem[nextNumber] = turns
+        nextNumber = turns++ - lastTime
+    }
+}
