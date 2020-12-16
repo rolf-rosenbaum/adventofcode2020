@@ -16,23 +16,7 @@ private fun readInputData() =
         .reader()
         .readLines()
 
-fun partOne(forrest: List<String>): Long = traverse(forrest, 3)
+fun partOne(input: List<String>): Int = 0
 
-fun partTwo(forrest: List<String>): Long = listOf(1, 3, 5, 7)
-    .map {
-        traverse(forrest, it)
-    }.reduce { acc, i -> acc * i } * traverse(forrest, 1, 2)
+fun partTwo(input: List<String>): Int = 0
 
-private fun traverse(forrest: List<String>, horizontalStep: Int, verticalStep: Int = 1): Long {
-    var treeCount = 0
-    var pos = 0
-    forrest.forEachIndexed { index, row ->
-        if (index % verticalStep == 0) {
-            if (row[pos % row.length] == '#') {
-                treeCount++
-            }
-            pos+=horizontalStep
-        }
-    }
-    return treeCount.toLong()
-}
