@@ -16,7 +16,34 @@ private fun readInputData() =
         .reader()
         .readLines()
 
-fun partOne(input: List<String>): Int = 0
+fun partOne(slope: List<String>): Int {
+    return traverse(slope, 3)
+}
 
-fun partTwo(input: List<String>): Int = 0
+fun partTwo(slope: List<String>): Long {
+    val result = listOf(1, 3, 5, 7).map {
+        traverse(slope, it)
+    }.reduce { acc, i -> acc * i }
 
+    var tmp = 0
+    var pos = 0
+    slope.forEachIndexed { index, row ->
+        if (index % 2 == 0) {
+            if (row[pos % row.length] == '#') {
+                tmp++
+            }
+            pos++
+        }
+    }
+    return result.toLong() * tmp
+}
+
+private fun traverse(slope: List<String>, steps: Int): Int {
+    var treeCount = 0
+    slope.forEachIndexed { index, row ->
+        if (row[(index * steps) % (row.length)] == '#') {
+            treeCount++
+        }
+    }
+    return treeCount
+}
