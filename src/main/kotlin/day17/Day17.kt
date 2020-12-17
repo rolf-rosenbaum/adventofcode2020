@@ -29,11 +29,7 @@ private fun EnergySource.countNeighbors(cell: Cell): Int {
     return count { it.isNeighbor(cell) }
 }
 
-var cycle: Int = 0
 fun EnergySource.next(): EnergySource {
-    println("Generation: $cycle")
-    prettyPrint()
-    cycle++
     val next = mutableSetOf<Cell>()
     return filter { countNeighbors(it) in 2..3 }.toSet() + populateDeadCells()
 }
@@ -69,29 +65,6 @@ private fun EnergySource.findDeadNeighbors(cell: Cell): Set<Cell> {
     }
     return candidates
 }
-
-private fun EnergySource.prettyPrint() {
-    val minLayer = minByOrNull { it.z }?.z ?: 0
-    val minX = minByOrNull { it.x }?.x ?: 0
-    val minY = minByOrNull { it.y }?.y ?: 0
-    val maxLayer = maxByOrNull { it.z }?.z ?: 0
-    val maxX = maxByOrNull { it.x }?.x ?: 0
-    val maxY = maxByOrNull { it.y }?.y ?: 0
-
-    for (layer in minLayer..maxLayer) {
-        println("Layer: $layer")
-        for (y in minY..maxY) {
-            var line = ""
-            for (x in minX..maxX) {
-                line += if (contains(Cell(x, y, layer))) "#" else "."
-            }
-            println(line)
-        }
-        println()
-    }
-}
-
-
 private fun readInputData(): List<String> =
     {}.javaClass.classLoader.getResourceAsStream("day17.txt")
         .reader()
