@@ -19,7 +19,7 @@ private fun initSource(lines: List<String>): EnergySource {
     lines.forEachIndexed { y, line ->
         line.forEachIndexed { x, c ->
             if (c == '#')
-                result.add(Cell(x, y, 0))
+                result.add(Cell(x, y))
         }
     }
     return result
@@ -28,6 +28,7 @@ private fun initSource(lines: List<String>): EnergySource {
 private fun EnergySource.countNeighbors(cell: Cell): Int {
     return count { it.isNeighbor(cell) }
 }
+
 var cycle: Int = 0
 fun EnergySource.next(): EnergySource {
     println("Generation: $cycle")
@@ -58,8 +59,10 @@ private fun EnergySource.findDeadNeighbors(cell: Cell): Set<Cell> {
     (cell.x - 1..cell.x + 1).forEach { x ->
         (cell.y - 1..cell.y + 1).forEach { y ->
             (cell.z - 1..cell.z + 1).forEach { z ->
-                if (!contains(Cell(x, y, z))) {
-                    candidates.add(Cell(x, y, z))
+                (cell.w - 1..cell.w + 1).forEach { w ->
+                    if (!contains(Cell(x, y, z, w))) {
+                        candidates.add(Cell(x, y, z, w))
+                    }
                 }
             }
         }
@@ -68,12 +71,12 @@ private fun EnergySource.findDeadNeighbors(cell: Cell): Set<Cell> {
 }
 
 private fun EnergySource.prettyPrint() {
-    val minLayer = minByOrNull{it.z}?.z ?: 0
-    val minX = minByOrNull{it.x}?.x ?: 0
-    val minY = minByOrNull{it.y}?.y ?: 0
-    val maxLayer = maxByOrNull{it.z}?.z ?: 0
-    val maxX = maxByOrNull{it.x}?.x ?: 0
-    val maxY = maxByOrNull{it.y}?.y ?: 0
+    val minLayer = minByOrNull { it.z }?.z ?: 0
+    val minX = minByOrNull { it.x }?.x ?: 0
+    val minY = minByOrNull { it.y }?.y ?: 0
+    val maxLayer = maxByOrNull { it.z }?.z ?: 0
+    val maxX = maxByOrNull { it.x }?.x ?: 0
+    val maxY = maxByOrNull { it.y }?.y ?: 0
 
     for (layer in minLayer..maxLayer) {
         println("Layer: $layer")
@@ -98,11 +101,12 @@ fun partOne(source: Set<Cell>): Int = generateSequence(source) { it.next() }.dro
 
 fun partTwo(input: Set<Cell>): Int = 0
 
-data class Cell(val x: Int, val y: Int, val z: Int) {
+data class Cell(val x: Int, val y: Int, val z: Int = 0, val w: Int = 0) {
     fun isNeighbor(other: Cell): Boolean {
         return this != other
                 && other.x in x - 1..x + 1
                 && other.y in y - 1..y + 1
                 && other.z in z - 1..z + 1
+                && other.w in w - 1..w + 1
     }
 }
