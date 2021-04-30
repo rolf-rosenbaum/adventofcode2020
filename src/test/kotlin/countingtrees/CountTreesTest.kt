@@ -8,5 +8,6 @@ class CountTreesTest {
     @Test
     fun `test setup is working`() {
         assertThat(true).isTrue
+        assertThat(false).isFalse
     }
 }
