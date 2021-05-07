@@ -1,4 +1,4 @@
-The task is to count trees on a hillside. The slope itself is represented by a piece of text, where a dot ('.') represents 
+We want to count trees on a hillside. The slope itself is represented by a piece of text, where a dot ('.') represents 
 open space, and a hash ('#') represents a tree.
 
 When going down the slope at a certain angle, how many trees does one encounter? 
