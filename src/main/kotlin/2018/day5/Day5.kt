@@ -23,25 +23,35 @@ fun readInputData(file: String = "2018/day5.txt") =
 
 fun partOne(polymers: String): Int {
 
-    return react(polymers.toCharArray()).length
+    return polymers.react().length
 }
 
 fun partTwo(polymers: String): Int {
 
-    val shortest  = ('a'..'z').minByOrNull {
+    val shortest = ('a'..'z').minByOrNull {
         val candidate = polymers.replace(it.toString(), "", true).toCharArray()
-        react(candidate).length
+        candidate.toString().react().length
     }
 
-    return react(polymers.replace(shortest!!.toString(), "", true).toCharArray()).length
+    return polymers.replace(shortest!!.toString(), "", true).react().length
 }
 
-fun react(polymers: CharArray): String {
-    var result = reactOnce(polymers)
-    while (result != reactOnce(result.toCharArray())) {
-        result = reactOnce(result.toCharArray())
+fun String.react(): String {
+    return fold(mutableListOf<Char>()) { done, c ->
+        when {
+            done.firstOrNull() matches c -> done.removeAt(0)
+            else -> done.add(0, c)
+        }
+        done
     }
-    return result
+        .reversed()
+        .joinToString("")
+
+//    var result = reactOnce(polymers)
+//    while (result != reactOnce(result.toCharArray())) {
+//        result = reactOnce(result.toCharArray())
+//    }
+//    return result
 }
 
 private fun reactOnce(polymers: CharArray): String {
@@ -64,3 +74,7 @@ private fun reactOnce(polymers: CharArray): String {
     }
     return result
 }
+
+private infix fun Char?.matches(other: Char) =
+    if (this == null) false
+    else abs(this.toInt() - other.toInt()) == 32

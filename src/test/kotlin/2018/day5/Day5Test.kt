@@ -8,32 +8,32 @@ class Day5Test {
 
     @Test
     fun `Aa is completely removed`() {
-        assertThat(react("Aa".toCharArray())).isEqualTo("")
+        assertThat("Aa".react()).isEqualTo("")
     }
 
     @Test
     fun `BaB remains unchanged`() {
-        assertThat(react("BaB".toCharArray())).isEqualTo("BaB")
+        assertThat("BaB".react()).isEqualTo("BaB")
     }
 
     @Test
     fun `BbA becomes A`() {
-        assertThat(react("BbA".toCharArray())).isEqualTo("A")
+        assertThat("BbA".react()).isEqualTo("A")
     }
 
     @Test
     fun `BbAa is completely removed`() {
-        assertThat(react("BbAa".toCharArray())).isEqualTo("")
+        assertThat("BbAa".react()).isEqualTo("")
     }
 
     @Test
     fun `CBbAac is completely removed`() {
-        assertThat(react("CBbAac".toCharArray())).isEqualTo("")
+        assertThat("CBbAac".react()).isEqualTo("")
     }
 
     @Test
-    fun `dabAcCaCBAcCcaDA becomes`() {
-        assertThat(react("dabAcCaCBAcCcaDA".toCharArray())).isEqualTo("dabCBAcaDA")
+    fun `dabAcCaCBAcCcaDA becomes dabCBAcaDA`() {
+        assertThat("dabAcCaCBAcCcaDA".react()).isEqualTo("dabCBAcaDA")
     }
 
 
